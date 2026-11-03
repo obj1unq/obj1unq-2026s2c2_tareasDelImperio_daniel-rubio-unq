@@ -1,45 +1,51 @@
 class Tarea{
-    var epoca = epocaDeLluvia 
-    method recursosProducidos()= 50 * (tiempo - desgaste) * esfuerzo 
-    
-    
-    
+
+    method desgaste (tiempo)
+    method esfuerzo()
+
+    method recursosProducidos(tiempo) = 50 * (tiempo - self.desgaste(tiempo)) * self.esfuerzo() 
 }
 
-class Siembra inherits Tarea(){
+//  Siembra 
+class Siembra inherits Tarea {
+  const esfuerzoDelCultivo          // configurable según el cultivo
 
-method desgaste() = 1 + horaExtra
+  method jornadaNormal()
 
+  override method esfuerzo() = esfuerzoDelCultivo
+  override method desgaste(tiempo) = 1 + (tiempo - self.jornadaNormal()).max(0)
 }
-
-class siembraEnElValle inherits Siembra {
-  // jornada < 8
-    retun ((if self.puedeSembrar){
-        super.tiempo
-    }else{
-      0} )
-    }
-
-
-
-
-class siembraEnTerraza inherit Siembra (tiempo){
-return (3 * 50 * (tiempo - desgaste) * esfuerzo)
+object calendario {
+  var property epocaActual = epocaSequia
 }
-
-
-
-
-
-object esEpocaLluvia() {
+object epocaLluvia {
   method puedeSembrar() = false
-}  
-
-object esEpocaSequia(){
-    method puedeSembrar() = true {
-      
-    }
 }
 
+object epocaSequia {
+  method puedeSembrar() = true
 }
-class siembraEnTerraza inherits Siembra{}
+
+class SiembraEnValle inherits Siembra {
+  override method jornadaNormal() = 8
+
+  override method recursosProducidos(tiempo) =
+    if (calendario.epocaActual().puedeSembrar()) super(tiempo) else 0
+}
+
+class SiembraEnTerrazas inherits Siembra {
+  override method jornadaNormal() = 6
+
+  override method recursosProducidos(tiempo) = 3 * super(tiempo)
+}
+
+//  Mensajes 
+class Mensaje inherits Tarea {
+  override method esfuerzo() = 1.4
+  override method desgaste(tiempo) = tiempo / 4
+}
+
+class MensajeImperial inherits Mensaje {
+  override method esfuerzo() = 1.8
+  override method desgaste(tiempo) = (super(tiempo) - 2).max(1)
+}
