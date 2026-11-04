@@ -31,3 +31,46 @@ describe "Imperio Inca" {
     assert.equals(810, caminoDelSapaInca.recursosProducidos(10))
   }
 }
+
+describe "Casos de prueba de habitantes" {
+  const siembraPapa = new SiembraEnValle(esfuerzoDelCultivo = 1.2)
+  const siembraMaiz = new SiembraEnTerrazas(esfuerzoDelCultivo = 1.5)
+  const rutaTamboCentral = new Mensaje()
+  const caminoDelSapaInca = new MensajeImperial()
+
+  method initialize() {
+    calendario.epocaActual(epocaSequia)
+  }
+
+  // ---------- Cusi (campesino) ----------
+  test "Cusi realiza la siembra de papa" {
+    const cusi = new Campesino(energia = 100, tiempoDedicado = 4)
+    cusi.realizar(siembraPapa)
+    assert.equals(82, cusi.energia())
+  }
+
+  test "Cusi realiza la ruta Tambo Central" {
+    const cusi = new Campesino(energia = 100, tiempoDedicado = 4)
+    cusi.realizar(rutaTamboCentral)
+    assert.equals(79, cusi.energia())
+  }
+
+  test "Cusi con energía 15 no puede sembrar papa y conserva su energía" {
+    const cusi = new Campesino(energia = 15, tiempoDedicado = 4)
+    assert.throwsException({ cusi.realizar(siembraPapa) })
+    assert.equals(15, cusi.energia())
+  }
+
+  // ---------- Túpac (élite) ----------
+  test "Túpac realiza la siembra de maíz en terrazas" {
+    const tupac = new Elite(energia = 200)
+    tupac.realizar(siembraMaiz)
+    assert.equals(111.25, tupac.energia())
+  }
+
+  test "Túpac realiza el camino del Sapa Inca" {
+    const tupac = new Elite(energia = 200)
+    tupac.realizar(caminoDelSapaInca)
+    assert.equals(137.5, tupac.energia())
+  }
+}

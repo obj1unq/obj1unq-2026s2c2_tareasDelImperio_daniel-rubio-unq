@@ -49,3 +49,42 @@ class MensajeImperial inherits Mensaje {
   override method esfuerzo() = 1.8
   override method desgaste(tiempo) = (super(tiempo) - 2).max(1)
 }
+
+// Habitantes
+
+class Habitante {
+  var property energia
+
+  method indiceResistencia()
+  method tiempoDedicado()
+
+  method recursosQueProduciria(tarea) = tarea.recursosProducidos(self.tiempoDedicado())
+
+  // Requerimiento 1
+  method energiaPerdida(tarea) = self.recursosQueProduciria(tarea) / self.indiceResistencia()
+
+  method puedeRealizar(tarea) = energia > self.energiaPerdida(tarea)
+
+  // Requerimiento 2
+  method realizar(tarea) {
+    if (not self.puedeRealizar(tarea))
+      self.error("No puede realizar la tarea")
+    energia -= self.energiaPerdida(tarea)
+  }
+}
+
+class Campesino inherits Habitante {
+  const property tiempoDedicado   // se configura por persona
+
+  override method indiceResistencia() = 10
+}
+
+class Elite inherits Habitante {
+  override method indiceResistencia() = 12
+  override method tiempoDedicado() = 10
+
+  override method energiaPerdida(tarea) = super(tarea) - 5
+
+  override method puedeRealizar(tarea) =
+    super(tarea) and self.recursosQueProduciria(tarea) > 500
+}
